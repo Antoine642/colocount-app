@@ -1,14 +1,24 @@
-// src/main.js
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
 import './assets/css/style.css';
-
+console.log(import.meta.env);
 const firebaseConfig = {
-  // Your Firebase configuration
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
+
+// Set initial route to /login
+router.push('/login');
 
 createApp(App).use(router).mount("#app");

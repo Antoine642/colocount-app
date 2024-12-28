@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Login</h1>
-    <form @submit.prevent="login">
+    <form @submit.prevent="loginWithGoogle">
       <div class="mb-4">
         <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
         <input type="email" id="email" v-model="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default {
   data() {
@@ -28,14 +28,15 @@ export default {
     };
   },
   methods: {
-    login() {
+    loginWithGoogle() {
       const auth = getAuth();
-      signInWithEmailAndPassword(auth, this.email, this.password)
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
         .then(() => {
           this.$router.push('/');
         })
         .catch((error) => {
-          console.error('Error logging in:', error);
+          console.error('Error logging in with Google:', error);
         });
     }
   }
