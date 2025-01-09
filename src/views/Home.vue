@@ -16,20 +16,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const appName = ref('colocount');
-const colocounts = ref([
-  { id: 1, name: 'Appartement Paris' },
-  { id: 2, name: 'Maison de vacances' },
-]);
+const colocounts = ref([]);
 
 const router = useRouter();
 
 const createNewColocount = () => {
-  // Logic to create a new colocount
-  // For now, we'll just redirect to a new page
   router.push('/colocount/new');
 };
+
+onMounted(() => {
+  const storedColocounts = JSON.parse(localStorage.getItem('colocounts')) || [];
+  colocounts.value = storedColocounts;
+});
 </script>
