@@ -7,11 +7,7 @@
             <HomeIcon :class="isActive('/home') ? 'fill-current' : ''" class="h-6 w-6" />
           </router-link>
         </li>
-        <li>
-          <router-link to="/colocount/new" class="text-gray-600 hover:text-blue-500">
-            <PlusIcon :class="isActive('/colocount/new') ? 'fill-current' : ''" class="h-6 w-6" />
-          </router-link>
-        </li>
+
         <li>
           <router-link to="/profile" class="text-gray-600 hover:text-blue-500">
             <UserIcon :class="isActive('/profile') ? 'fill-current' : ''" class="h-6 w-6" />

@@ -1,7 +1,8 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Bienvenue sur {{ appName }}</h1>
-    <button @click="createNewColocount" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+    <button @click="createNewColocount"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
       Créer un nouveau {{ appName }}
     </button>
     <h2 class="text-2xl font-semibold mb-4">Vos {{ appName }}s existants :</h2>
