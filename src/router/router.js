@@ -1,7 +1,9 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import Colocount from '../views/Colocount.vue';
+import Login from '../views/Login.vue';
+import NewColocount from '../views/NewColocount.vue';
+import Profile from '../views/Profile.vue';
 
 const routes = [
   {
@@ -17,12 +19,17 @@ const routes = [
   {
     path: '/colocount/new',
     name: 'NewColocount',
-    component: () => import('../views/NewColocount.vue') // Assuming you have a NewColocount.vue
+    component: NewColocount
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue') // Assuming you have a Login.vue
+    component: Login
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
   }
 ];
 

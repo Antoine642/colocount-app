@@ -1,10 +1,11 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
+import router from "./router/router";
 import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
 import './assets/css/style.css';
-console.log(import.meta.env);
+import { getDatabase, ref, set } from "firebase/database";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -16,9 +17,31 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
+const database = getDatabase(app);
 
-// Set initial route to /login
-router.push('/login');
+function updateDatabaseFromLocalStorage() {
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  if (userData) {
+    set(ref(database, 'users/' + userData.id), userData);
+  }
+}
+
+function checkUserAuthentication() {
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      localStorage.setItem('userData', JSON.stringify({
+        id: user.uid,
+        email: user.email,
+        // Add other user data as needed
+      }));
+    } else {
+      localStorage.removeItem('userData');
+    }
+  });
+}
 
 createApp(App).use(router).mount("#app");
+
+updateDatabaseFromLocalStorage();
+checkUserAuthentication();
