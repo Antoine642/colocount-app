@@ -12,9 +12,9 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { firestore } from '../service/firebase';
-import { collection, addDoc } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 import ReturnButton from '../components/ReturnButton.vue';
+import { addDocument } from '../service/database';
 
 export default {
     components: { ReturnButton },
@@ -23,17 +23,34 @@ export default {
         const colocountName = ref('');
         const router = useRouter();
 
-        const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 
         const createColocount = async () => {
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            if (!user) {
+                console.error("User is not logged in");
+                return;
+            }
+
             const colocounts = JSON.parse(localStorage.getItem('colocounts')) || [];
-            const newColocount = { id: Date.now(), name: colocountName.value, userId: generateId() };
+            const newColocount = {
+                id: Date.now(),
+                name: colocountName.value,
+                userId: user.uid,
+                createdByEmail: user.email,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                income: 0,
+                expenses: 0,
+            };
             colocounts.push(newColocount);
             localStorage.setItem('colocounts', JSON.stringify(colocounts));
+            localStorage.setItem('colocountsTimestamp', new Date().toISOString()); // Add timestamp
 
             // Save new colocount to Firestore
             try {
-                await addDoc(collection(firestore, 'colocounts'), newColocount);
+                await addDocument('colocounts', newColocount);
                 console.log("New colocount added to Firestore");
             } catch (error) {
                 console.error("Error adding colocount to Firestore:", error);

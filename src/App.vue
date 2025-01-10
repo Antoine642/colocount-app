@@ -7,11 +7,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import NavBar from './components/NavBar.vue';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const router = useRouter();
+const route = useRoute();
 const isAuthenticated = ref(false);
 
 function checkSessionStorageForUser() {
@@ -35,10 +36,15 @@ onMounted(() => {
         // Add other user data as needed
       };
       sessionStorage.setItem('userData', JSON.stringify(userData));
+      if (route.path === '/') {
+        router.push('/home');
+      }
     } else {
       isAuthenticated.value = false;
       sessionStorage.removeItem('userData');
-      router.push('/login');
+      if (route.path === '/') {
+        router.push('/login');
+      }
     }
   });
 });
