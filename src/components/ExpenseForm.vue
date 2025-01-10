@@ -10,7 +10,7 @@
           </div>
           <div class="mb-4">
             <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Montant</label>
-            <input v-model="expense.amount" type="number" id="amount" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input v-model.number="amountInEuros" @blur="formatAmount" type="number" step="0.01" id="amount" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
           </div>
           <div class="mb-4">
             <label for="currency" class="block text-gray-700 text-sm font-bold mb-2">Devise</label>
@@ -46,14 +46,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
-const expense = ref({
-  title: '',
-  amount: 0,
-  currency: '€',
-  date: '',
-  recurrence: '',
+const props = defineProps({
+  expense: {
+    type: Object,
+    default: () => ({
+      title: '',
+      amount: 0,
+      currency: '€',
+      date: '',
+      recurrence: '',
+    }),
+  },
+});
+
+const expense = ref({ ...props.expense });
+
+watch(() => props.expense, (newVal) => {
+  expense.value = { ...newVal };
+});
+
+const amountInEuros = computed({
+  get: () => (expense.value.amount / 100).toFixed(2),
+  set: (value) => { expense.value.amount = Math.round(value * 100); }
 });
 
 const emit = defineEmits(['close', 'submit']);
@@ -61,5 +78,9 @@ const emit = defineEmits(['close', 'submit']);
 const submitForm = () => {
   emit('submit', { ...expense.value });
   expense.value = { title: '', amount: 0, currency: '€', date: '', recurrence: '' };
+};
+
+const formatAmount = () => {
+  amountInEuros.value = parseFloat(amountInEuros.value).toFixed(2);
 };
 </script>

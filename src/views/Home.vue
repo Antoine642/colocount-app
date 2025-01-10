@@ -1,7 +1,10 @@
 <template>
   <div class="container mx-auto px-4 py-8">
+    <!-- Add ReturnButton component with route prop if needed -->
+    <ReturnButton route="/some-specific-route" />
     <h1 class="text-3xl font-bold mb-6">Bienvenue sur {{ appName }}</h1>
-    <button @click="createNewColocount" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+    <button @click="createNewColocount"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
       Créer un nouveau {{ appName }}
     </button>
     <h2 class="text-2xl font-semibold mb-4">Vos {{ appName }}s existants :</h2>
@@ -16,20 +19,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import ReturnButton from '../components/ReturnButton.vue'; // Import ReturnButton component
 
 const appName = ref('colocount');
-const colocounts = ref([
-  { id: 1, name: 'Appartement Paris' },
-  { id: 2, name: 'Maison de vacances' },
-]);
+const colocounts = ref([]);
 
 const router = useRouter();
+const db = getFirestore();
 
 const createNewColocount = () => {
-  // Logic to create a new colocount
-  // For now, we'll just redirect to a new page
   router.push('/colocount/new');
 };
+
+const syncColocounts = async () => {
+  const querySnapshot = await getDocs(collection(db, 'colocounts'));
+  const firestoreColocounts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  colocounts.value = firestoreColocounts;
+  localStorage.setItem('colocounts', JSON.stringify(firestoreColocounts));
+};
+
+onMounted(async () => {
+  const storedColocounts = JSON.parse(localStorage.getItem('colocounts')) || [];
+  colocounts.value = storedColocounts;
+  await syncColocounts();
+});
 </script>

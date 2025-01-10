@@ -1,24 +1,31 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Login</h1>
-    <form @submit.prevent="login">
-      <div class="mb-4">
-        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-        <input type="email" id="email" v-model="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-      </div>
-      <div class="mb-6">
-        <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
-        <input type="password" id="password" v-model="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" required>
-      </div>
+    <h1 class="text-3xl font-bold mb-6">Login or Signup</h1>
+    <form @submit.prevent="authenticateWithGoogle">
       <div class="flex items-center justify-between">
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Login</button>
+        <button type="submit"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Login
+          or Signup with Google</button>
       </div>
     </form>
   </div>
 </template>
 
 <script>
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
+
+initializeApp(firebaseConfig);
 
 export default {
   data() {
@@ -28,14 +35,15 @@ export default {
     };
   },
   methods: {
-    login() {
+    authenticateWithGoogle() {
       const auth = getAuth();
-      signInWithEmailAndPassword(auth, this.email, this.password)
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
         .then(() => {
-          this.$router.push('/');
+          this.$router.push('/home');
         })
         .catch((error) => {
-          console.error('Error logging in:', error);
+          console.error('Error authenticating with Google:', error);
         });
     }
   }
